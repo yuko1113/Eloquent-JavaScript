@@ -192,4 +192,107 @@ test(3);
     }
     return true;
   }
-  
+
+// chapter6
+console.log("A vector type");
+
+class Vec {
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
+  }
+  plus(instance) {
+    return new Vec(this.x + instance.x, this.y + instance.y);
+  }
+  minus(instance) {
+    return new Vec(this.x - instance.x, this.y - instance.y);
+  }
+  get length() {
+    return Math.sqrt(this.x ** 2 + this.y ** 2);
+  }
+}
+
+console.log(new Vec(3, 9));
+console.log(new Vec(1, 2).plus(new Vec(2, 3)));
+// → Vec{x: 3, y: 5}
+console.log(new Vec(1, 2).minus(new Vec(2, 3)));
+// → Vec{x: -1, y: -1}
+console.log(new Vec(3, 4).length);
+// → 5
+
+console.log("Groups");
+
+class Group {
+  constructor() {
+    this.newGroup = [];
+  }
+  add(v) {
+    if(!this.has(v)) {
+      this.newGroup.push(v);
+    }
+  }
+  delete(v) {
+    if(this.has(v)) {
+      this.newGroup = this.newGroup.filter(elm => elm !== v);
+    }
+  }
+  has(v) {
+    return this.newGroup.includes(v);
+  }
+  static from(obj) {
+    let group = new Group;
+    for(const elm of obj) {
+      group.add(elm);
+    }
+    return group;
+  }
+
+  [Symbol.iterator]() {
+    return new GroupIterator(this);
+  }
+}
+
+let group = Group.from([10, 20]);
+console.log(group.has(10));
+// → true
+console.log(group.has(30));
+// → false
+group.add(10);
+group.delete(10);
+console.log(group.has(10));
+// → false
+
+console.log("Iterable groups");
+
+// Your code here (and the code from the previous exercise)
+class GroupIterator {
+  constructor(group) {
+    this.group = group;
+    this.position = 0;
+  }
+
+  next() {
+    if (this.position >= this.group.newGroup.length) {
+      return {done: true};
+    } else {
+      let result = {value: this.group.newGroup[this.position], done: false};
+      this.position++;
+      return result;
+    }
+  }
+}
+
+for (let value of Group.from(["a", "b", "c"])) {
+  console.log(value);
+}
+// → a
+// → b
+// → c
+
+console.log("Borrowing a method");
+
+let map = {one: true, two: true, hasOwnProperty: true};
+
+// Fix this call
+console.log(Object.prototype.hasOwnProperty.call(map, "one"));
+// → true
